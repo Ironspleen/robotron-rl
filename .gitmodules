@@ -1,0 +1,3 @@
+[submodule "robotron2084gym"]
+	path = robotron2084gym
+	url = git@github.com:stridera/robotron2084gym.git
