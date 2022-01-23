@@ -16,7 +16,7 @@ def main():
     config = {
         "policy_type": "MlpPolicy",
         "total_timesteps": 5_500_000,
-        "lr": 0.000001,
+        "lr": 0.0001,
         "env_name": "robotron",
     }
 
