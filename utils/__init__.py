@@ -1,0 +1,1 @@
+from .wandb_video_recorder_wrapper import WandBVideoRecorderWrapper
