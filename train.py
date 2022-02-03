@@ -14,7 +14,7 @@ from wandb.integration.sb3 import WandbCallback
 import wandb
 
 
-def main(model_name: str, config_path: str = None, resume_path: str = None, project: str = None, group: str = None):
+def main(model_name: str, config_path: str = None, resume_path: str = None, project: str = None, group: str = None, device: str = 'cuda:0'):
     config = {
         'model': model_name,
         "env_name": "robotron",
@@ -34,7 +34,7 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
         config['model_kwargs'] = {
             'policy': "CnnPolicy",
             'learning_rate': 0.00025,
-            "gamma": 0.75,
+            "gamma": 0.99,
         }
     elif model_name == 'qrdqn':
         model_class = QRDQN
@@ -42,6 +42,14 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
             "policy": "CnnPolicy",
             "learning_rate": 0.00025,
             "gamma": 0.75,
+            "batch_size": 32,
+            "train_freq": 4,
+            "target_update_interval": 10_000,
+            "learning_starts": 200_000,
+            "buffer_size": 500_000,
+            "max_grad_norm": 10,
+            "exploration_fraction": 0.1,
+            "exploration_final_eps": 0.01,
         }
     else:
         raise ValueError(f"Unknown model name: {model_name}")
@@ -69,10 +77,10 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
     env.reset()
 
     if resume_path:
-        model = model_class.load(path=resume_path, env=env, verbose=1,
+        model = model_class.load(path=resume_path, env=env, verbose=1, device=device,
                                  tensorboard_log=f"runs/{run.id}", **config['model_kwargs'])
     else:
-        model = model_class(env=env, verbose=1, tensorboard_log=f"runs/{run.id}", **config['model_kwargs'])
+        model = model_class(env=env, verbose=1, tensorboard_log=f"runs/{run.id}", device=device, **config['model_kwargs'])
 
     model.learn(
         total_timesteps=config["total_timesteps"],
@@ -94,5 +102,6 @@ if __name__ == "__main__":
     parser.add_argument("--resume", type=str, default=None)
     parser.add_argument("--project", type=str, default=None)
     parser.add_argument("--group", type=str, default=None)
+    parser.add_argument("--device", type=str, default='cuda:0')
     args = parser.parse_args()
-    main(args.model, args.config, args.resume, args.project, args.group)
+    main(args.model, args.config, args.resume, args.project, args.group, args.device)
