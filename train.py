@@ -33,7 +33,9 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
         model_class = PPO
         config['model_kwargs'] = {
             'policy': "CnnPolicy",
-            'learning_rate': 0.00025,
+            'learning_rate': 0.0000025,
+            "batch_size": 128,
+            "n_epochs": 100,
             "gamma": 0.99,
         }
     elif model_name == 'qrdqn':
@@ -41,7 +43,7 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
         config['model_kwargs'] = {
             "policy": "CnnPolicy",
             "learning_rate": 0.00025,
-            "gamma": 0.75,
+            "gamma": 0.99,
             "batch_size": 32,
             "train_freq": 4,
             "target_update_interval": 10_000,
