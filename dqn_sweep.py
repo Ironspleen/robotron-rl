@@ -10,35 +10,35 @@ from wandb.integration.sb3 import WandbCallback
 import wandb
 
 
-def main(batch_size, buffer_size, exploration_final_eps, exploration_fraction, gamma, learning_rate, learning_starts, target_update_interval, total_timesteps):
+def main(args):
     config = {
         "env": {
+            "always_move": True,
             "config_path": "game_config.yaml",
             "level": 2,
             "lives": 0,
-            "always_move": True,
         },
         "model": {
-            "batch_size": batch_size, 
-            "buffer_size": buffer_size, 
-            "exploration_final_eps": exploration_final_eps, 
-            "exploration_fraction": exploration_fraction, 
-            "gamma": gamma, 
-            "learning_rate": learning_rate, 
-            "learning_starts": learning_starts, 
+            "batch_size": args.batch_size, 
+            "buffer_size": args.buffer_size, 
+            "exploration_final_eps": args.exploration_final_eps, 
+            "exploration_fraction": args.exploration_fraction, 
+            "gamma": args.gamma, 
+            "learning_rate": args.learning_rate, 
+            "learning_starts": args.learning_starts, 
+            "max_grad_norm": args.max_grad_norm,
             "policy": "CnnPolicy",
-            "target_update_interval": target_update_interval, 
+            "target_update_interval": args.target_update_interval,
         },
-        "total_timesteps": total_timesteps,
+        "total_timesteps": args.total_timesteps,
     }
-    device = "cuda:0"
 
     run = wandb.init(
         project="robotron",
         config=config,
-        sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
-        monitor_gym=True,  # auto-upload the videos of agents playing the game
-        save_code=True,  # optional
+        sync_tensorboard=True,
+        monitor_gym=True,
+        save_code=True,
     )
     run.log_code()
     run.log_code(name="game_config", include_fn=lambda x: x.endswith(".yaml"))
@@ -52,7 +52,7 @@ def main(batch_size, buffer_size, exploration_final_eps, exploration_fraction, g
     env = VecFrameStack(env, 4, channels_order='first')
 
     env.reset()
-    model = QRDQN(env=env, verbose=1, tensorboard_log=f"runs/{run.id}", device=device, **config['model'])
+    model = QRDQN(env=env, verbose=1, tensorboard_log=f"runs/{run.id}", **config['model'])
     model.learn(
         total_timesteps=config['total_timesteps'],
         callback=WandbCallback(
@@ -76,7 +76,8 @@ if __name__ == "__main__":
     parser.add_argument("--gamma", type=float, default=None)
     parser.add_argument("--learning_rate", type=float, default=None)
     parser.add_argument("--learning_starts", type=float, default=None)
+    parser.add_argument("--max_grad_norm", type=float, default=None)
     parser.add_argument("--target_update_interval", type=float, default=None)
     parser.add_argument("--total_timesteps", type=float, default=None)
     args = parser.parse_args()
-    main(args.batch_size, args.buffer_size, args.exploration_final_eps, args.exploration_fraction, args.gamma, args.learning_rate, args.learning_starts, args.target_update_interval, args.total_timesteps)
+    main(args)
