@@ -13,6 +13,7 @@ __pycache__/
 
 # RL Artifacts
 wandb/
+run/
 runs/
 models/
 videos/

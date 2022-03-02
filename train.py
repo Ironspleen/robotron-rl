@@ -23,7 +23,8 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
 
         'env': {
             'config_path': config_path,
-            "level": 2,
+            "level": 1,
+            "max_level": 1,
             "lives": 0,
             "fps": 0,
             "always_move": True,
@@ -31,13 +32,7 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
     }
     if model_name == "ppo":
         model_class = PPO
-        config['model_kwargs'] = {
-            'policy': "CnnPolicy",
-            'learning_rate': 0.0000025,
-            "batch_size": 128,
-            "n_epochs": 100,
-            "gamma": 0.99,
-        }
+        config['model_kwargs'] = {}
     elif model_name == 'qrdqn':
         model_class = QRDQN
         config['model_kwargs'] = {
@@ -82,7 +77,8 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
         model = model_class.load(path=resume_path, env=env, verbose=1, device=device,
                                  tensorboard_log=f"runs/{run.id}", **config['model_kwargs'])
     else:
-        model = model_class(env=env, verbose=1, tensorboard_log=f"runs/{run.id}", device=device, **config['model_kwargs'])
+        model = model_class(env=env, verbose=1,
+                            tensorboard_log=f"runs/{run.id}", device=device, **config['model_kwargs'])
 
     model.learn(
         total_timesteps=config["total_timesteps"],

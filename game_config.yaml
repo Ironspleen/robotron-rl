@@ -4,7 +4,9 @@ play_area: [116, 309, 608, 974]
 resource_path: "resources/"
 waves:
     # Grunts, Electrodes, Hulks, Brains, Sphereoids, Quarks, Mommies, Daddies, Mikeys
-    - [15, 5, 0, 0, 0, 0, 1, 1, 0]    # 1
+    # - [15, 5, 0, 0, 0, 0, 1, 1, 0]    # 1
+    - [1, 0, 0, 0, 0, 0, 0, 0, 0]    # 1
+    - [0, 0, 0, 0, 0, 0, 0, 0, 0]    # 1
     - [17, 15, 5, 0, 1, 0, 1, 1, 1]
     - [22, 25, 6, 0, 3, 0, 2, 2, 2]
     - [34, 25, 7, 0, 4, 0, 2, 2, 2]

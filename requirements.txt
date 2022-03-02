@@ -51,9 +51,6 @@ tensorboard==2.8.0
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
 termcolor==1.1.0
-torch==1.10.1+cu113
-torchaudio==0.10.1+cu113
-torchvision==0.11.2+cu113
 typing-extensions==4.0.1
 urllib3==1.26.8
 wandb==0.12.9
