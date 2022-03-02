@@ -19,7 +19,7 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
         'model': model_name,
         "env_name": "robotron",
         'resume_path': resume_path,
-        "total_timesteps": 5_500_000,
+        "total_timesteps": 55_500_000,
 
         'env': {
             'config_path': config_path,
