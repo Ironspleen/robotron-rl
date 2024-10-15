@@ -4,7 +4,7 @@ Train using Stable Baselines3
 import argparse
 
 from robotron2084gym.robotron import RobotronEnv
-from gym.wrappers import GrayScaleObservation, ResizeObservation
+from gymnasium.wrappers import GrayScaleObservation, ResizeObservation
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3 import PPO
@@ -24,7 +24,6 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
         'env': {
             'config_path': config_path,
             "level": 1,
-            "max_level": 1,
             "lives": 0,
             "fps": 0,
             "always_move": True,
@@ -60,7 +59,6 @@ def main(model_name: str, config_path: str = None, resume_path: str = None, proj
         save_code=True,  # optional
     )
 
-    run.log_code()
     run.log_code(name="game_config", include_fn=lambda x: x.endswith(".yaml"))
 
     env = RobotronEnv(**config['env'])
