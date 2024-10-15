@@ -60,6 +60,7 @@ Player lives rolls over to 0 after 255, so always walk into an enemy if lives ar
 import argparse
 import math
 import time
+from os import path
 from robotron2084gym.robotron import RobotronEnv
 INVALID = -1
 
@@ -912,7 +913,8 @@ def chooseOutputs(objectList):
 def main(starting_level: int = 1, lives: int = 3, fps: int = 30, godmode: bool = False):
     global DEBUG_LEVEL, MAX_RIGHT, MAX_TOP, Y_AXIS_INVERSION, ADJ_TOP, ADJ_BOTTOM, ADJ_LEFT, ADJ_RIGHT
 
-    env = RobotronEnv(level=starting_level, lives=lives, fps=fps, godmode=godmode)
+    config_path = path.join(path.dirname(__file__), "config.yaml")
+    env = RobotronEnv(level=starting_level, lives=lives, fps=fps, config_path=config_path, godmode=godmode)
     board_size = env.get_board_size()
     # print(f"Board Size: {board_size}")  # Default Board Size: (665, 492)
 

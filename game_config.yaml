@@ -47,7 +47,7 @@ waves:
     - [80, 0, 6, 0, 5, 1, 3, 3, 3]
     - [30, 15, 2, 25, 1, 1, 10, 10, 10]  # 40
 
-extra_life_score: -1
+extra_life_score: 25000
 
 grunt:
     score: 100
