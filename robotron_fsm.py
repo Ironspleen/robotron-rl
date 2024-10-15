@@ -40,13 +40,6 @@ Objects can be:
     Prog - originally missing from this list
 """
 
-import argparse
-
-import math
-
-import time
-
-from robotron2084gym.robotron import RobotronEnv
 
 """
 from robotron import RobotronEnv
@@ -62,11 +55,15 @@ Player lives rolls over to 0 after 255, so always walk into an enemy if lives ar
 
 """
 
-#CONSTANTS
+# CONSTANTS
 
+import argparse
+import math
+import time
+from robotron2084gym.robotron import RobotronEnv
 INVALID = -1
 
-##Grid and Distance
+# Grid and Distance
 MAX_TOP = 492
 MAX_BOTTOM = 0
 MAX_LEFT = 0
@@ -82,7 +79,7 @@ ADJ_RIGHT = MAX_RIGHT - BORDER_ADJUST
 Y_AXIS_INVERSION = 492
 
 """ Are these direction constants available somewhere else?"""
-## Joystick directions
+# Joystick directions
 STAY = 0
 UP = 1
 UP_RIGHT = 2
@@ -93,11 +90,11 @@ DOWN_LEFT = 6
 LEFT = 7
 UP_LEFT = 8
 
-## Move directives
+# Move directives
 TOWARD = 1
 AWAY = 0
 
-## Object categories and names
+# Object categories and names
 PLAYER = 'Player'
 OBSTACLE = 'Electrode'
 HULK = 'Hulk'
@@ -107,7 +104,7 @@ ENEMIES = {'Grunt', 'Brain'}
 CHASE_ENEMIES = {'Sphereoid', 'Quark'}
 PRIORITY_ENEMIES = {'Enforcer', 'Tank'}
 PROJECTILES = {'TankShell', 'CruiseMissile', 'EnforcerBullet', 'Prog'}
-BULLET = 'Bullet' # Bullet is from the player, and not an enemy projectile
+BULLET = 'Bullet'  # Bullet is from the player, and not an enemy projectile
 
 FAMILY_TYPE = 'Family'
 ENEMY_TYPE = 'Enemy'
@@ -115,7 +112,7 @@ PRIORITY_ENEMY_TYPE = 'PriorityEnemy'
 CHASE_ENEMY_TYPE = 'ChaseEnemy'
 PROJECTILE_TYPE = 'Projectile'
 
-## Distance values for tuning behavior
+# Distance values for tuning behavior
 ADJACENT = 40
 ADJACENT_HULK = 50
 
@@ -138,7 +135,7 @@ CLOSE_MOVE_COUNT_LIMIT = 5
 CLOSE_FIRE_COUNT_LIMIT = 3
 CLOSE_MOVE_CIVILIAN = 75
 
-## Object data array element positions
+# Object data array element positions
 X_POS = 0
 Y_POS = 1
 TYPE = 2
@@ -147,7 +144,7 @@ DISTANCE = 0
 X_DISTANCE = 1
 Y_DISTANCE = 2
 
-## Print statement levels
+# Print statement levels
 DEBUG_LEVEL = 0
 DEBUG_OFF = 0
 DEBUG_LOW = 1
@@ -158,6 +155,8 @@ DEBUG_HIGH = 3
 Return an array of calculated total distance and each direction: [DISTANCE, X_DISTANCE, Y_DISTANCE]
 X and Y are necessary to determine direction relative to the player
 """
+
+
 def getDistance(playerLocation, objX, objY):
     pX = playerLocation[X_POS]
     pY = playerLocation[Y_POS]
@@ -179,11 +178,12 @@ def getDistance(playerLocation, objX, objY):
 
     """ skip the math for the diagonal adjacent case """
     if abs(xDistance) == 1 and abs(yDistance) == 1:
-    	return [1, xDistance, yDistance]
+        return [1, xDistance, yDistance]
 
     """ Pythagorean """
-    absDistance = int(math.sqrt(pow(abs(xDistance),2) + pow(abs(yDistance),2)))
+    absDistance = int(math.sqrt(pow(abs(xDistance), 2) + pow(abs(yDistance), 2)))
     return [absDistance, xDistance, yDistance]
+
 
 """
 targetDistanceData - X_DISTANCE, Y_DISTANCE, TYPE
@@ -192,14 +192,16 @@ Use the X and Y distance values of the target to calculate the direction to fire
 The Y Axis is inverted. It is 0 at the top border, and INCREASES toward the bottom.
 Return a value from the Joystick Directions constants.
 """
+
+
 def getFireStick(targetDistanceData):
     xDistance = targetDistanceData[X_DISTANCE]
     yDistance = targetDistanceData[Y_DISTANCE]
 
     if DEBUG_LEVEL >= DEBUG_MED:
         print(f"getFireStick {targetDistanceData} x {xDistance} y {yDistance}")
-    
-    #skip the math if one direction is 0
+
+    # skip the math if one direction is 0
     if xDistance == 0:
         if yDistance >= 0:
             return UP
@@ -216,36 +218,36 @@ def getFireStick(targetDistanceData):
     if DEBUG_LEVEL >= DEBUG_HIGH:
         print(f"getFireStick radians {radians}")
 
-    #45 degrees per segment, and negatives are possible
+    # 45 degrees per segment, and negatives are possible
     if radians == 0 or (radians > 0 and radians < 0.392699081):
-        #0 to 22.5 = RIGHT
+        # 0 to 22.5 = RIGHT
         return RIGHT
     elif (radians > 0 and radians < 1.178097245):
-        #22.5 to 67.5 = UP_RIGHT
+        # 22.5 to 67.5 = UP_RIGHT
         return UP_RIGHT
     elif (radians > 0 and radians < 1.963495408):
-        #67.5 to 112.5 = UP
+        # 67.5 to 112.5 = UP
         return UP
     elif (radians > 0 and radians < 2.748893572):
-        #112.5 to 157.5 = UP_LEFT
+        # 112.5 to 157.5 = UP_LEFT
         return UP_LEFT
     elif (radians > 0 and radians < 3.534291735):
-        #157.5 to 202.5 = LEFT
+        # 157.5 to 202.5 = LEFT
         return LEFT
     elif (radians > 0 and radians < 4.3196898899):
-        #202.5 to 247.5 = DOWN_LEFT
+        # 202.5 to 247.5 = DOWN_LEFT
         return DOWN_LEFT
     elif (radians > 0 and radians < 5.105088062):
-        #247.5 to 292.5 = DOWN
+        # 247.5 to 292.5 = DOWN
         return DOWN
     elif (radians > 0 and radians < 5.890486225):
-        #292.5 to 337.5 = DOWN_RIGHT
+        # 292.5 to 337.5 = DOWN_RIGHT
         return DOWN_RIGHT
     elif (radians > 0 and radians <= 6.283185308):
-        #337.5 to 360 = RIGHT
+        # 337.5 to 360 = RIGHT
         return RIGHT
     elif (radians < 0 and radians > -0.392699081):
-        #0 to -22.5 = RIGHT
+        # 0 to -22.5 = RIGHT
         return RIGHT
     elif (radians < 0 and radians > -1.178097245):
         # -22.5 to -67.5 = DOWN_RIGHT
@@ -276,6 +278,7 @@ def getFireStick(targetDistanceData):
             print(f"getFireStick did not match {radians}")
         return RIGHT
 
+
 """
 targetDistanceData - X_DISTANCE, Y_DISTANCE, TYPE
 TYPE doesn't matter at this point, though
@@ -284,6 +287,8 @@ playerLocation - X and Y coordinates
 Use the X and Y distance values of the target plus the move directive to figure out which direction to move
 Return a value from the Joystick Directions constants.
 """
+
+
 def getMoveStick(targetDistanceData, moveDirective, playerLocation):
     """ flipping the signs should reverse the direction relative to the player """
     """
@@ -295,7 +300,7 @@ def getMoveStick(targetDistanceData, moveDirective, playerLocation):
     	targetDistanceData[Y_DISTANCE] = -yDistance
     """
 
-    """ it's the same calculation """	
+    """ it's the same calculation """
     moveDirection = getFireStick(targetDistanceData)
 
     # If the solution above to flip the signs of the targetDistanceData is better, remove this section. Can't have both.
@@ -311,7 +316,7 @@ def getMoveStick(targetDistanceData, moveDirective, playerLocation):
     """ Wall handling """
     playerXPos = playerLocation[X_POS]
     playerYPos = playerLocation[Y_POS]
-    
+
     if playerXPos <= ADJ_LEFT:
         if DEBUG_LEVEL >= DEBUG_MED:
             print(f"LEFT WALL {ADJ_LEFT} playerX {playerXPos} playerY {playerYPos}")
@@ -324,7 +329,8 @@ def getMoveStick(targetDistanceData, moveDirective, playerLocation):
                 moveDirection = RIGHT
         elif playerYPos <= ADJ_BOTTOM:
             if DEBUG_LEVEL >= DEBUG_MED:
-                print(f"BOTTOM LEFT CORNER LEFT {ADJ_LEFT} playerX {playerXPos} BOTTOM {ADJ_BOTTOM} playerY {playerYPos}")
+                print(f"BOTTOM LEFT CORNER LEFT {ADJ_LEFT} playerX {
+                      playerXPos} BOTTOM {ADJ_BOTTOM} playerY {playerYPos}")
             if moveDirection == LEFT or moveDirection == DOWN_LEFT:
                 moveDirection = UP
             elif moveDirection == DOWN or moveDirection == DOWN_RIGHT:
@@ -351,7 +357,8 @@ def getMoveStick(targetDistanceData, moveDirective, playerLocation):
                 moveDirection = LEFT
         elif playerYPos <= ADJ_BOTTOM:
             if DEBUG_LEVEL >= DEBUG_MED:
-                print(f"BOTTOM RIGHT CORNER RIGHT {ADJ_RIGHT} playerX {playerXPos} BOTTOM {ADJ_BOTTOM} playerY {playerYPos}")
+                print(f"BOTTOM RIGHT CORNER RIGHT {ADJ_RIGHT} playerX {
+                      playerXPos} BOTTOM {ADJ_BOTTOM} playerY {playerYPos}")
             if moveDirection == RIGHT or moveDirection == DOWN_RIGHT:
                 moveDirection = UP
             elif moveDirection == DOWN or moveDirection == DOWN_LEFT:
@@ -394,15 +401,18 @@ def getMoveStick(targetDistanceData, moveDirective, playerLocation):
 
     return moveDirection
 
+
 """
 objectList - array of objects detected on screen with 3 values: objX, objY, objType
 Evaluate all objects on screen and determine the best output to the joysticks.
 Return a pair of values from the Joystick Directions constants: moveStick, fireStick
 """
+
+
 def chooseOutputs(objectList):
     # This global probably doesn't need to be declared
     global Y_AXIS_INVERSION
-    
+
     moveStick = INVALID
     fireStick = INVALID
 
@@ -437,11 +447,11 @@ def chooseOutputs(objectList):
         """ Y Axis is inverted. It is 0 at the top border, and increases downward """
         """ This should adjust the Y value so that 0 is at the bottom border, and it increases upwward """
         objY = Y_AXIS_INVERSION - objY
-        
+
         if objType == PLAYER:
             playerFound = True
             playerLocation = [objX, objY]
-            if(objX == 332 and objY == 246):
+            if (objX == 332 and objY == 246):
                 if DEBUG_LEVEL >= DEBUG_LOW:
                     print("PLAYER IN CENTER - MAYBE NEW LEVEL")
             if DEBUG_LEVEL >= DEBUG_LOW:
@@ -460,14 +470,14 @@ def chooseOutputs(objectList):
         """ Y Axis is inverted. It is 0 at the top border, and increases downward """
         """ This should adjust the Y value so that 0 is at the bottom border, and it increases upwward """
         objY = Y_AXIS_INVERSION - objY
-        
+
         if DEBUG_LEVEL >= DEBUG_HIGH:
             print(f"Object List Loop {obj} x {objX} y {objY} type {objType}")
-            
+
         """ skip the PLAYER and his BULLETs """
         if objType == PLAYER or objType == BULLET:
-            continue    
-        
+            continue
+
         if objType in PROJECTILES:
             projectileDistance = getDistance(playerLocation, objX, objY)
             if DEBUG_LEVEL >= DEBUG_HIGH:
@@ -497,7 +507,8 @@ def chooseOutputs(objectList):
         elif objType in PRIORITY_ENEMIES:
             priorityEnemyDistance = getDistance(playerLocation, objX, objY)
             if DEBUG_LEVEL >= DEBUG_HIGH:
-                print(f"Priority Enemy x {objX} y {objY} dist {priorityEnemyDistance} prior nearest Priority Enemy {nearestPriorityEnemy}")
+                print(f"Priority Enemy x {objX} y {objY} dist {
+                      priorityEnemyDistance} prior nearest Priority Enemy {nearestPriorityEnemy}")
             if priorityEnemyDistance[DISTANCE] <= CLOSE_MOVE_PRIORITY_ENEMY:
                 if DEBUG_LEVEL >= DEBUG_MED:
                     print(f"Priority Enemy is CLOSE_MOVE {priorityEnemyDistance}")
@@ -521,7 +532,8 @@ def chooseOutputs(objectList):
         elif objType in CHASE_ENEMIES:
             chaseEnemyDistance = getDistance(playerLocation, objX, objY)
             if DEBUG_LEVEL >= DEBUG_MED:
-                print(f"Chase Enemy x {objX} y {objY} dist {chaseEnemyDistance} prior nearest Chase Enemy {nearestChaseEnemy}")
+                print(f"Chase Enemy x {objX} y {objY} dist {
+                      chaseEnemyDistance} prior nearest Chase Enemy {nearestChaseEnemy}")
             if chaseEnemyDistance[DISTANCE] <= CLOSE_MOVE_CHASE_ENEMY:
                 if DEBUG_LEVEL >= DEBUG_MED:
                     print(f"Chase Enemy is CLOSE_MOVE {chaseEnemyDistance}")
@@ -594,7 +606,7 @@ def chooseOutputs(objectList):
             if obstacleDistance[DISTANCE] <= CLOSE_MOVE_OBSTACLE:
                 if DEBUG_LEVEL >= DEBUG_MED:
                     print(f"Obstacle is CLOSE_MOVE {obstacleDistance}")
-                closeMoveCount +=1
+                closeMoveCount += 1
             if obstacleDistance[DISTANCE] <= CLOSE_FIRE_OBSTACLE:
                 if DEBUG_LEVEL >= DEBUG_MED:
                     print(f"Obstacle is CLOSE_FIRE {obstacleDistance}")
@@ -630,12 +642,11 @@ def chooseOutputs(objectList):
         else:
             if DEBUG_LEVEL >= DEBUG_LOW:
                 print(f"Unknown object {obj}")
-                
+
     if DEBUG_LEVEL >= DEBUG_HIGH:
         print("Done looping over objects")
 
     """ DONE CHECK ALL OBJECTS """
-
 
     """ CHECK ADJACENT """
 
@@ -704,17 +715,17 @@ def chooseOutputs(objectList):
 
     if moveStick != INVALID and fireStick != INVALID:
         if DEBUG_LEVEL >= DEBUG_LOW:
-            print(f"ADJACENT decision move {moveStick} fire {fireStick} closeMoveCount {closeMoveCount} Adjacent {adjacentType} {adjacent}")
+            print(f"ADJACENT decision move {moveStick} fire {fireStick} closeMoveCount {
+                  closeMoveCount} Adjacent {adjacentType} {adjacent}")
         return [moveStick, fireStick]
 
     if DEBUG_LEVEL >= DEBUG_MED:
         print(f"Non Adjacent projectile {nearestProjectile} enemy {nearestEnemy}")
-    if(moveStick != INVALID):
+    if (moveStick != INVALID):
         if DEBUG_LEVEL >= DEBUG_HIGH:
             print(f"ONLY IF FAMILY WAS ADJACENT moveStick already set {moveStick}")
 
     """ DONE CHECK ADJACENT """
-
 
     """ CHECK CLOSE """
 
@@ -742,14 +753,16 @@ def chooseOutputs(objectList):
             if moveStick == INVALID:
                 moveStick = getMoveStick(nearestChaseEnemy, AWAY, playerLocation)
                 if DEBUG_LEVEL >= DEBUG_LOW:
-                    print(f"nearest Chase Enemy is CLOSE_MOVE fire {fireStick} move {moveStick} player {playerLocation}")
+                    print(f"nearest Chase Enemy is CLOSE_MOVE fire {
+                          fireStick} move {moveStick} player {playerLocation}")
         if nearestChaseEnemy[DISTANCE] <= CLOSE_FIRE_CHASE_ENEMY:
             if DEBUG_LEVEL >= DEBUG_MED:
                 print(f"Chase Enemy is CLOSE_FIRE {nearestChaseEnemy}")
             if fireStick == INVALID:
                 fireStick = getFireStick(nearestChaseEnemy)
                 if DEBUG_LEVEL >= DEBUG_LOW:
-                    print(f"nearest Chase Enemy is CLOSE_FIRE fire {fireStick} move {moveStick} player {playerLocation}")
+                    print(f"nearest Chase Enemy is CLOSE_FIRE fire {
+                          fireStick} move {moveStick} player {playerLocation}")
 
     if nearestPriorityEnemy != INVALID:
         if nearestPriorityEnemy[DISTANCE] <= CLOSE_MOVE_PRIORITY_ENEMY:
@@ -758,14 +771,16 @@ def chooseOutputs(objectList):
             if moveStick == INVALID:
                 moveStick = getMoveStick(nearestPriorityEnemy, AWAY, playerLocation)
                 if DEBUG_LEVEL >= DEBUG_LOW:
-                    print(f"nearest Priority Enemy is CLOSE_MOVE fire {fireStick} move {moveStick} player {playerLocation}")
+                    print(f"nearest Priority Enemy is CLOSE_MOVE fire {
+                          fireStick} move {moveStick} player {playerLocation}")
         if nearestPriorityEnemy[DISTANCE] <= CLOSE_FIRE_PRIORITY_ENEMY:
             if DEBUG_LEVEL >= DEBUG_MED:
                 print(f"Priority Enemy is CLOSE_FIRE {nearestPriorityEnemy}")
             if fireStick == INVALID:
                 fireStick = getFireStick(nearestPriorityEnemy)
                 if DEBUG_LEVEL >= DEBUG_LOW:
-                    print(f"nearest Priority Enemy is CLOSE_FIRE fire {fireStick} move {moveStick} player {playerLocation}")
+                    print(f"nearest Priority Enemy is CLOSE_FIRE fire {
+                          fireStick} move {moveStick} player {playerLocation}")
 
     if nearestEnemy != INVALID:
         if nearestEnemy[DISTANCE] <= CLOSE_MOVE_ENEMY:
@@ -814,7 +829,7 @@ def chooseOutputs(objectList):
                 fireStick = getFireStick(nearestObstacle)
                 if DEBUG_LEVEL >= DEBUG_LOW:
                     print(f"nearest Obstacle is CLOSE_FIRE fire {fireStick} move {moveStick} player {playerLocation}")
- 
+
     if nearestCivilian != INVALID:
         if DEBUG_LEVEL >= DEBUG_HIGH:
             print(f"Found a nearest civilian {nearestCivilian}")
@@ -831,12 +846,11 @@ def chooseOutputs(objectList):
         moveStick = STAY
         if DEBUG_LEVEL >= DEBUG_LOW:
             print(f"No projectiles and closeMoveCount {closeMoveCount} past limit {CLOSE_MOVE_COUNT_LIMIT} so STAY")
-    
+
     if DEBUG_LEVEL >= DEBUG_MED:
         print(f"Nearest and Close checks Complete closeMoveCount {closeMoveCount} fire {fireStick} move {moveStick}")
 
-    """ DONE CHECK CLOSE """ 
-
+    """ DONE CHECK CLOSE """
 
     """ if nothing is close, shoot the nearest high priority target, and STAY """
     """ if there are no close high priority targets, do not fire and save it for when something is close """
@@ -874,7 +888,7 @@ def chooseOutputs(objectList):
         else:
             fireStick = UP
             print("fireStick and nearest target were INVALID, which should never happen")
-    """   
+    """
 
     if moveStick == INVALID:
         if DEBUG_LEVEL >= DEBUG_LOW:
@@ -882,7 +896,7 @@ def chooseOutputs(objectList):
         if nearestChaseEnemy != INVALID:
             if DEBUG_LEVEL >= DEBUG_LOW:
                 print(f"move toward Chase Enemy {nearestChaseEnemy}")
-            moveStick = getMoveStick(nearestChaseEnemy, TOWARD, playerLocation)            
+            moveStick = getMoveStick(nearestChaseEnemy, TOWARD, playerLocation)
         elif nearestCivilian != INVALID:
             if DEBUG_LEVEL >= DEBUG_LOW:
                 print(f"move toward civilian {nearestCivilian}")
@@ -891,65 +905,63 @@ def chooseOutputs(objectList):
             if DEBUG_LEVEL >= DEBUG_LOW:
                 print("moveStick default to Stay")
             moveStick = STAY
-    
+
     return [moveStick, fireStick]
-
-
-
 
 
 def main(starting_level: int = 1, lives: int = 3, fps: int = 30, godmode: bool = False):
     global DEBUG_LEVEL, MAX_RIGHT, MAX_TOP, Y_AXIS_INVERSION, ADJ_TOP, ADJ_BOTTOM, ADJ_LEFT, ADJ_RIGHT
-    
+
     env = RobotronEnv(starting_level, lives, fps, godmode=godmode)
     board_size = env.get_board_size()
-    #print(f"Board Size: {board_size}")  # Default Board Size: (665, 492)
+    # print(f"Board Size: {board_size}")  # Default Board Size: (665, 492)
 
     """ Set debug level for print statements here """
-    DEBUG_LEVEL = DEBUG_OFF # DEBUG_LOW DEBUG_MED DEBUG_HIGH
+    DEBUG_LEVEL = DEBUG_OFF  # DEBUG_LOW DEBUG_MED DEBUG_HIGH
 
     MAX_RIGHT, MAX_TOP = board_size
     MAX_BOTTOM = 0
     MAX_LEFT = 0
 
     Y_AXIS_INVERSION = MAX_TOP
-    
+
     BORDER_ADJUST = 20
-    
-    ADJ_TOP = MAX_TOP - 2 #BORDER_ADJUST
+
+    ADJ_TOP = MAX_TOP - 2  # BORDER_ADJUST
     ADJ_BOTTOM = MAX_BOTTOM + BORDER_ADJUST + 9
-    ADJ_LEFT = MAX_LEFT + 2 #+ BORDER_ADJUST
+    ADJ_LEFT = MAX_LEFT + 2  # + BORDER_ADJUST
     ADJ_RIGHT = MAX_RIGHT - BORDER_ADJUST
 
     if DEBUG_LEVEL >= DEBUG_LOW:
         print(f"Board Size: {board_size} {MAX_RIGHT} {MAX_TOP}")  # Default Board Size: (665, 492)
-        print(f"adj top {ADJ_TOP} bot {ADJ_BOTTOM} left {ADJ_LEFT} right {ADJ_RIGHT}") # Adjusted Board Size: (2-645, 29-490)
+        print(f"adj top {ADJ_TOP} bot {ADJ_BOTTOM} left {ADJ_LEFT} right {
+              ADJ_RIGHT}")  # Adjusted Board Size: (2-645, 29-490)
 
     env.reset()
-    _, _, isDead, data = env.step(0)
-    
+    _, _, isDead, _, data = env.step(0)
+
     while True:
         if DEBUG_LEVEL >= DEBUG_LOW:
             print(f"FRAME START")
         if DEBUG_LEVEL >= DEBUG_HIGH:
             print(f"Objects: {data}")
-            
+
         actionArray = chooseOutputs(data["data"])
 
         if DEBUG_LEVEL >= DEBUG_LOW:
             print(f"Move and Fire: {actionArray}")
-        
+
         encodedAction = actionArray[0] * 9 + actionArray[1]
 
-        if DEBUG_LEVEL >= DEBUG_HIGH:    
+        if DEBUG_LEVEL >= DEBUG_HIGH:
             print(f"encoded action: {encodedAction}")
-        
-        _, _, isDead, data = env.step(encodedAction)
- 
-        #_image, reward, isDead, data = env.step(env.action_space.sample())
-        #score, level, lives, family, data = data.values()
-        #print(f"Score: {score} | Level: {level} | Lives: {lives} | Reward: {reward} | Dead: {isDead}")
-        #print(f"Family Remaining: {family} | Objects: {data}")
+
+        _, _, isDead, _, data = env.step(encodedAction)
+
+        # _image, reward, isDead, data = env.step(env.action_space.sample())
+        # score, level, lives, family, data = data.values()
+        # print(f"Score: {score} | Level: {level} | Lives: {lives} | Reward: {reward} | Dead: {isDead}")
+        # print(f"Family Remaining: {family} | Objects: {data}")
         """
         Should look like:
         Score: 0 | Level: 1 | Lives: 3 | Reward: 0.0 | Dead: False
@@ -958,7 +970,7 @@ def main(starting_level: int = 1, lives: int = 3, fps: int = 30, godmode: bool =
             (136, 123, 'Electrode'), (214, 161, 'Electrode'), (187, 334, 'Electrode'), (625, 186, 'Electrode'), 
             (352, 261, 'Bullet')]
         """
-        
+
         if isDead:
             if DEBUG_LEVEL >= DEBUG_LOW:
                 print("GAME OVER")
@@ -968,6 +980,7 @@ def main(starting_level: int = 1, lives: int = 3, fps: int = 30, godmode: bool =
         if DEBUG_LEVEL >= DEBUG_LOW:
             print("FRAME END")
             print("")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Rainbow')
