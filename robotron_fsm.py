@@ -329,8 +329,8 @@ def getMoveStick(targetDistanceData, moveDirective, playerLocation):
                 moveDirection = RIGHT
         elif playerYPos <= ADJ_BOTTOM:
             if DEBUG_LEVEL >= DEBUG_MED:
-                print(f"BOTTOM LEFT CORNER LEFT {ADJ_LEFT} playerX {
-                      playerXPos} BOTTOM {ADJ_BOTTOM} playerY {playerYPos}")
+                print(
+                    f"BOTTOM LEFT CORNER LEFT {ADJ_LEFT} playerX {playerXPos} BOTTOM {ADJ_BOTTOM} playerY {playerYPos}")
             if moveDirection == LEFT or moveDirection == DOWN_LEFT:
                 moveDirection = UP
             elif moveDirection == DOWN or moveDirection == DOWN_RIGHT:
@@ -357,8 +357,8 @@ def getMoveStick(targetDistanceData, moveDirective, playerLocation):
                 moveDirection = LEFT
         elif playerYPos <= ADJ_BOTTOM:
             if DEBUG_LEVEL >= DEBUG_MED:
-                print(f"BOTTOM RIGHT CORNER RIGHT {ADJ_RIGHT} playerX {
-                      playerXPos} BOTTOM {ADJ_BOTTOM} playerY {playerYPos}")
+                print(
+                    f"BOTTOM RIGHT CORNER RIGHT {ADJ_RIGHT} playerX {playerXPos} BOTTOM {ADJ_BOTTOM} playerY {playerYPos}")
             if moveDirection == RIGHT or moveDirection == DOWN_RIGHT:
                 moveDirection = UP
             elif moveDirection == DOWN or moveDirection == DOWN_LEFT:
@@ -507,8 +507,8 @@ def chooseOutputs(objectList):
         elif objType in PRIORITY_ENEMIES:
             priorityEnemyDistance = getDistance(playerLocation, objX, objY)
             if DEBUG_LEVEL >= DEBUG_HIGH:
-                print(f"Priority Enemy x {objX} y {objY} dist {
-                      priorityEnemyDistance} prior nearest Priority Enemy {nearestPriorityEnemy}")
+                print(
+                    f"Priority Enemy x {objX} y {objY} dist {priorityEnemyDistance} prior nearest Priority Enemy {nearestPriorityEnemy}")
             if priorityEnemyDistance[DISTANCE] <= CLOSE_MOVE_PRIORITY_ENEMY:
                 if DEBUG_LEVEL >= DEBUG_MED:
                     print(f"Priority Enemy is CLOSE_MOVE {priorityEnemyDistance}")
@@ -532,8 +532,8 @@ def chooseOutputs(objectList):
         elif objType in CHASE_ENEMIES:
             chaseEnemyDistance = getDistance(playerLocation, objX, objY)
             if DEBUG_LEVEL >= DEBUG_MED:
-                print(f"Chase Enemy x {objX} y {objY} dist {
-                      chaseEnemyDistance} prior nearest Chase Enemy {nearestChaseEnemy}")
+                print(
+                    f"Chase Enemy x {objX} y {objY} dist {chaseEnemyDistance} prior nearest Chase Enemy {nearestChaseEnemy}")
             if chaseEnemyDistance[DISTANCE] <= CLOSE_MOVE_CHASE_ENEMY:
                 if DEBUG_LEVEL >= DEBUG_MED:
                     print(f"Chase Enemy is CLOSE_MOVE {chaseEnemyDistance}")
@@ -715,8 +715,8 @@ def chooseOutputs(objectList):
 
     if moveStick != INVALID and fireStick != INVALID:
         if DEBUG_LEVEL >= DEBUG_LOW:
-            print(f"ADJACENT decision move {moveStick} fire {fireStick} closeMoveCount {
-                  closeMoveCount} Adjacent {adjacentType} {adjacent}")
+            print(
+                f"ADJACENT decision move {moveStick} fire {fireStick} closeMoveCount {closeMoveCount} Adjacent {adjacentType} {adjacent}")
         return [moveStick, fireStick]
 
     if DEBUG_LEVEL >= DEBUG_MED:
@@ -753,16 +753,16 @@ def chooseOutputs(objectList):
             if moveStick == INVALID:
                 moveStick = getMoveStick(nearestChaseEnemy, AWAY, playerLocation)
                 if DEBUG_LEVEL >= DEBUG_LOW:
-                    print(f"nearest Chase Enemy is CLOSE_MOVE fire {
-                          fireStick} move {moveStick} player {playerLocation}")
+                    print(
+                        f"nearest Chase Enemy is CLOSE_MOVE fire {fireStick} move {moveStick} player {playerLocation}")
         if nearestChaseEnemy[DISTANCE] <= CLOSE_FIRE_CHASE_ENEMY:
             if DEBUG_LEVEL >= DEBUG_MED:
                 print(f"Chase Enemy is CLOSE_FIRE {nearestChaseEnemy}")
             if fireStick == INVALID:
                 fireStick = getFireStick(nearestChaseEnemy)
                 if DEBUG_LEVEL >= DEBUG_LOW:
-                    print(f"nearest Chase Enemy is CLOSE_FIRE fire {
-                          fireStick} move {moveStick} player {playerLocation}")
+                    print(
+                        f"nearest Chase Enemy is CLOSE_FIRE fire {fireStick} move {moveStick} player {playerLocation}")
 
     if nearestPriorityEnemy != INVALID:
         if nearestPriorityEnemy[DISTANCE] <= CLOSE_MOVE_PRIORITY_ENEMY:
@@ -771,16 +771,16 @@ def chooseOutputs(objectList):
             if moveStick == INVALID:
                 moveStick = getMoveStick(nearestPriorityEnemy, AWAY, playerLocation)
                 if DEBUG_LEVEL >= DEBUG_LOW:
-                    print(f"nearest Priority Enemy is CLOSE_MOVE fire {
-                          fireStick} move {moveStick} player {playerLocation}")
+                    print(
+                        f"nearest Priority Enemy is CLOSE_MOVE fire {fireStick} move {moveStick} player {playerLocation}")
         if nearestPriorityEnemy[DISTANCE] <= CLOSE_FIRE_PRIORITY_ENEMY:
             if DEBUG_LEVEL >= DEBUG_MED:
                 print(f"Priority Enemy is CLOSE_FIRE {nearestPriorityEnemy}")
             if fireStick == INVALID:
                 fireStick = getFireStick(nearestPriorityEnemy)
                 if DEBUG_LEVEL >= DEBUG_LOW:
-                    print(f"nearest Priority Enemy is CLOSE_FIRE fire {
-                          fireStick} move {moveStick} player {playerLocation}")
+                    print(
+                        f"nearest Priority Enemy is CLOSE_FIRE fire {fireStick} move {moveStick} player {playerLocation}")
 
     if nearestEnemy != INVALID:
         if nearestEnemy[DISTANCE] <= CLOSE_MOVE_ENEMY:
@@ -912,7 +912,7 @@ def chooseOutputs(objectList):
 def main(starting_level: int = 1, lives: int = 3, fps: int = 30, godmode: bool = False):
     global DEBUG_LEVEL, MAX_RIGHT, MAX_TOP, Y_AXIS_INVERSION, ADJ_TOP, ADJ_BOTTOM, ADJ_LEFT, ADJ_RIGHT
 
-    env = RobotronEnv(starting_level, lives, fps, godmode=godmode)
+    env = RobotronEnv(level=starting_level, lives=lives, fps=fps, godmode=godmode)
     board_size = env.get_board_size()
     # print(f"Board Size: {board_size}")  # Default Board Size: (665, 492)
 
@@ -934,8 +934,8 @@ def main(starting_level: int = 1, lives: int = 3, fps: int = 30, godmode: bool =
 
     if DEBUG_LEVEL >= DEBUG_LOW:
         print(f"Board Size: {board_size} {MAX_RIGHT} {MAX_TOP}")  # Default Board Size: (665, 492)
-        print(f"adj top {ADJ_TOP} bot {ADJ_BOTTOM} left {ADJ_LEFT} right {
-              ADJ_RIGHT}")  # Adjusted Board Size: (2-645, 29-490)
+        # Adjusted Board Size: (2-645, 29-490)
+        print(f"adj top {ADJ_TOP} bot {ADJ_BOTTOM} left {ADJ_LEFT} right {ADJ_RIGHT}")
 
     env.reset()
     _, _, isDead, _, data = env.step(0)
